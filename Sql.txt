@@ -1,0 +1,164 @@
+SimplyFly - Air Ticket Booking
+
+1. Creating database:
+CREATE DATABASE airticketdb;
+
+2. Use the database:
+USE airticketdb;
+
+Tables are automatically created with the help of Hibernate.
+
+3. Describe the structure of each table:
+mysql> DESC users;
++----------------+-------------------------------------+------+-----+---------+----------------+
+| Field          | Type                                | Null | Key | Default | Extra          |
++----------------+-------------------------------------+------+-----+---------+----------------+
+| id             | bigint                              | NO   | PRI | NULL    | auto_increment |
+| address        | varchar(255)                        | YES  |     | NULL    |                |
+| contact_number | varchar(255)                        | YES  |     | NULL    |                |
+| email          | varchar(255)                        | NO   | UNI | NULL    |                |
+| gender         | varchar(255)                        | YES  |     | NULL    |                |
+| name           | varchar(255)                        | YES  |     | NULL    |                |
+| password       | varchar(255)                        | YES  |     | NULL    |                |
+| role           | enum('ADMIN','FLIGHT_OWNER','USER') | NO   |     | NULL    |                |
++----------------+-------------------------------------+------+-----+---------+----------------+
+8 rows in set (0.01 sec)
+
+mysql> DESC flights;
++-----------------+--------------+------+-----+---------+----------------+
+| Field           | Type         | Null | Key | Default | Extra          |
++-----------------+--------------+------+-----+---------+----------------+
+| id              | bigint       | NO   | PRI | NULL    | auto_increment |
+| arrival_time    | datetime(6)  | YES  |     | NULL    |                |
+| baggage_cabin   | varchar(255) | YES  |     | NULL    |                |
+| baggage_checkin | varchar(255) | YES  |     | NULL    |                |
+| departure_time  | datetime(6)  | YES  |     | NULL    |                |
+| fare            | double       | NO   |     | NULL    |                |
+| flight_name     | varchar(255) | YES  |     | NULL    |                |
+| flight_number   | varchar(255) | YES  |     | NULL    |                |
+| total_seats     | int          | NO   |     | NULL    |                |
+| owner_id        | bigint       | YES  | MUL | NULL    |                |
+| route_id        | bigint       | YES  | MUL | NULL    |                |
++-----------------+--------------+------+-----+---------+----------------+
+11 rows in set (0.00 sec)
+
+mysql> DESC routes;
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| id          | bigint       | NO   | PRI | NULL    | auto_increment |
+| destination | varchar(255) | YES  |     | NULL    |                |
+| distance    | int          | YES  |     | NULL    |                |
+| duration    | varchar(255) | YES  |     | NULL    |                |
+| origin      | varchar(255) | YES  |     | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
+5 rows in set (0.00 sec)
+
+mysql> DESC bookings;
++--------------+--------------+------+-----+---------+----------------+
+| Field        | Type         | Null | Key | Default | Extra          |
++--------------+--------------+------+-----+---------+----------------+
+| id           | bigint       | NO   | PRI | NULL    | auto_increment |
+| booking_date | datetime(6)  | YES  |     | NULL    |                |
+| seat_count   | int          | NO   |     | NULL    |                |
+| status       | varchar(255) | YES  |     | NULL    |                |
+| total_price  | double       | NO   |     | NULL    |                |
+| flight_id    | bigint       | YES  | MUL | NULL    |                |
+| user_id      | bigint       | YES  | MUL | NULL    |                |
++--------------+--------------+------+-----+---------+----------------+
+7 rows in set (0.00 sec)
+
+mysql> DESC payments;
++----------------+--------------+------+-----+---------+----------------+
+| Field          | Type         | Null | Key | Default | Extra          |
++----------------+--------------+------+-----+---------+----------------+
+| id             | bigint       | NO   | PRI | NULL    | auto_increment |
+| amount         | double       | NO   |     | NULL    |                |
+| payment_method | varchar(255) | YES  |     | NULL    |                |
+| payment_time   | datetime(6)  | YES  |     | NULL    |                |
+| refund_time    | datetime(6)  | YES  |     | NULL    |                |
+| status         | varchar(255) | YES  |     | NULL    |                |
+| booking_id     | bigint       | YES  | UNI | NULL    |                |
++----------------+--------------+------+-----+---------+----------------+
+7 rows in set (0.00 sec)
+
+mysql> DESC seats;
++-------------+----------------------------+------+-----+---------+----------------+
+| Field       | Type                       | Null | Key | Default | Extra          |
++-------------+----------------------------+------+-----+---------+----------------+
+| id          | bigint                     | NO   | PRI | NULL    | auto_increment |
+| is_booked   | bit(1)                     | NO   |     | NULL    |                |
+| seat_class  | enum('BUSINESS','ECONOMY') | YES  |     | NULL    |                |
+| seat_number | varchar(255)               | NO   |     | NULL    |                |
+| status      | varchar(255)               | NO   |     | NULL    |                |
+| booking_id  | bigint                     | YES  | MUL | NULL    |                |
+| flight_id   | bigint                     | NO   | MUL | NULL    |                |
++-------------+----------------------------+------+-----+---------+----------------+
+7 rows in set (0.00 sec)
+
+mysql> DESC password_reset_token;
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| id          | bigint       | NO   | PRI | NULL    | auto_increment |
+| expiry_date | datetime(6)  | YES  |     | NULL    |                |
+| token       | varchar(255) | YES  |     | NULL    |                |
+| user_id     | bigint       | YES  | MUL | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
+
+4. View the tables:
+mysql> SELECT * FROM users;
++----+-----------+----------------+----------------------+--------+----------+--------------------------------------------------------------+--------------+
+| id | address   | contact_number | email                | gender | name     | password                                                     | role         |
++----+-----------+----------------+----------------------+--------+----------+--------------------------------------------------------------+--------------+
+|  1 | Chennai   | 9718941888     | admin@example.com    | FEMALE | Admin    | $2a$10$EXagOvcwgdFkX5SE/Mwcs.C14hgmw8VPP.lfInMoN3IWDBR9/QObm | ADMIN        |
+|  2 | Bangalore | 9445432328     | raju@example.com     | Male   | Raju     | $2a$10$Hne28Pc2JbfopH7DwHSZcuXZRK.vfm8OJbpxsQtvf2ylUxaAF/EVm | FLIGHT_OWNER |
+|  3 | NULL      | 9710987677     | srimathi@example.com | FEMALE | Srimathi | $2a$10$BCezjxmNPPtlY42wwBb44ePUZLjujPfN79yfCUTvqMWCDJ9XIxOYW | USER         |
+|  5 | NULL      | 9765456780     | radha@example.com    | Female | Radha    | $2a$10$beRdbF3s4sAOLzPXXm50ROvebDmboZ7WpA8vYmLyYvlpdE68eSqh6 | USER         |
++----+-----------+----------------+----------------------+--------+----------+--------------------------------------------------------------+--------------+
+4 rows in set (0.01 sec)
+
+mysql> SELECT * FROM flights;
++----+----------------------------+---------------+-----------------+----------------------------+------+-----------------------+---------------+-------------+----------+----------+
+| id | arrival_time               | baggage_cabin | baggage_checkin | departure_time             | fare | flight_name           | flight_number | total_seats | owner_id | route_id |
++----+----------------------------+---------------+-----------------+----------------------------+------+-----------------------+---------------+-------------+----------+----------+
+|  1 | 2025-07-17 12:15:00.000000 | 6             | 25              | 2025-07-17 09:00:00.000000 | 5978 | Air India Express     | AI101         |         180 |        1 |        1 |
+|  2 | 2025-07-21 08:45:00.000000 | 7kg           | 20kg            | 2025-07-21 07:00:00.000000 | 3200 | Indigo Mumbai Express | 6E201         |          60 |        2 |        2 |
++----+----------------------------+---------------+-----------------+----------------------------+------+-----------------------+---------------+-------------+----------+----------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT * FROM routes;
++----+-------------+----------+----------+-----------+
+| id | destination | distance | duration | origin    |
++----+-------------+----------+----------+-----------+
+|  1 | Delhi       |     2200 | 3hr 15m  | Chennai   |
+|  2 | Bangalore   |      984 | 1hr 45m  | Mumbai    |
+|  3 | Kolkata     |     1305 | 2hr 15m  | Delhi     |
+|  4 | Pune        |      560 | 1hr 10m  | Hyderabad |
++----+-------------+----------+----------+-----------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT * FROM bookings;
++----+----------------------------+------------+-----------+-------------+-----------+---------+
+| id | booking_date               | seat_count | status    | total_price | flight_id | user_id |
++----+----------------------------+------------+-----------+-------------+-----------+---------+
+|  1 | 2025-07-13 15:39:31.208007 |          1 | BOOKED    |        5999 |         1 |       3 |
+|  2 | 2025-07-14 14:08:43.085293 |          1 | CANCELLED |        3200 |         2 |       3 |
+|  3 | 2025-07-14 21:12:45.385795 |          1 | BOOKED    |        3200 |         2 |       3 |
+|  4 | 2025-07-16 11:59:40.376959 |          2 | CANCELLED |        6400 |         2 |       5 |
+|  5 | 2025-07-17 07:24:53.065746 |          2 | CANCELLED |        6400 |         2 |       3 |
++----+----------------------------+------------+-----------+-------------+-----------+---------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT * FROM payments;
++----+--------+----------------+----------------------------+----------------------------+----------+------------+
+| id | amount | payment_method | payment_time               | refund_time                | status   | booking_id |
++----+--------+----------------+----------------------------+----------------------------+----------+------------+
+|  1 |   5999 | UPI            | 2025-07-13 15:39:35.874730 | NULL                       | PAID     |          1 |
+|  2 |   3200 | UPI            | 2025-07-14 14:08:48.618437 | 2025-07-14 14:10:54.779421 | REFUNDED |          2 |
+|  3 |   3200 | UPI            | 2025-07-14 21:12:57.608273 | NULL                       | PAID     |          3 |
+|  4 |   6400 | UPI            | 2025-07-16 11:59:48.653900 | 2025-07-16 12:07:20.360308 | REFUNDED |          4 |
+|  5 |   6400 | UPI            | 2025-07-17 07:25:14.006886 | 2025-07-17 07:39:19.044056 | REFUNDED |          5 |
++----+--------+----------------+----------------------------+----------------------------+----------+------------+
+5 rows in set (0.00 sec)
+
